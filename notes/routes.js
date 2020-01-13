@@ -3,12 +3,46 @@ const NoteModel = require("./model");
 
 //get all notes
 router.get("/", (request, response, next) => {
-  response.send("All notes");
+  NoteModel.find()
+    .then((results) => {
+        if (!results) {
+            //404 = not found
+            response
+                .status(404)
+                .send("notes not found")
+        }
+        else {
+            response.json(results)
+        }
+    })
+    .catch((error) => {
+        console.log(error)
+        response
+            //500 = server error
+            .status(500)
+            .send("error occurred")
+    })
 });
 
 //get single note by id
 router.get("/:id", (request, response, next) => {
-  response.send("Get note by id");
+    NoteModel.findById(request.params.id)
+        .then((results) => {
+            if(!results) {
+                response
+                    .status(404)
+                    .send("note not found")
+            }
+            else {
+                response.json(results)
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            response
+                .status(500)
+                .send("error occurred")
+        })
 });
 
 //create note
@@ -39,14 +73,49 @@ router.post(
   }
 );
 
-//update note by id
-router.put("/:id", (request, response, next) => {
-  response.send("Update note");
+//update note by id -- put -- findOneAndUpdate
+router.put("/:id", updateInputValidation, (request, response, next) => {
+    //three parameters: (1) what to find (2) what to update (3) show old vs new records
+    NoteModel.findOneAndUpdate({ _id: request.params.id }, request.updateObject, {
+        new: true
+    })
+        .then((results) => {
+            if(!results) {
+                response
+                    .status(404)
+                    .send("note not found")
+            }
+            else {
+                response.json(results)
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            response
+                .status(500)
+                .send("error occurred")
+        })
 });
 
-//delete note
-router.delete("/", (request, response, next) => {
-  response.send("Delete note");
+//delete note by id--mongoose uses findOneAndRemove--uses provided id and removes it
+router.delete("/:id", (request, response, next) => {
+    NoteModel.findOneAndRemove({ _id: request.params.id })
+        .then((results) => {
+            if(!results) {
+                response
+                    .status(404)
+                    .send("note not found")
+            }
+            else {
+                response.send("deleted successfully ")
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            response
+                .status(500)
+                .send("error occurred")
+        })
 });
 
 //create middleware function to ensure required fields are accounted for; else throws and error
@@ -70,6 +139,22 @@ function inputValidation(request, response, next) {
   else {
     next();
   }
+}
+
+//validation middleware
+function updateInputValidation(request, response, next) {
+    const { title, body } = request.body
+    const updateObject = {}
+
+    if (title) {
+        updateObject.title = title
+    }
+
+    if (body) {
+        updateObject.body = body
+    }
+    request.updateObject=updateObject
+    next()
 }
 
 module.exports = router;

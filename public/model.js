@@ -28,6 +28,6 @@ const publicSchema = new Schema({
     }
 });
 
-const PublicModel = mongoose.model('Note', publicSchema);
+const PublicModel = mongoose.model('User', publicSchema);
 
 module.exports = PublicModel
