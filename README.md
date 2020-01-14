@@ -7,4 +7,6 @@
 - nodemon https://www.npmjs.com/package/nodemon
 - express https://www.npmjs.com/package/express
 - body-parser https://www.npmjs.com/package/body-parser
-- mongoose
+- mongoose https://www.npmjs.com/package/mongoose
+- bcryptjs https://www.npmjs.com/package/bcryptjs
+- chance https://www.npmjs.com/package/chance
