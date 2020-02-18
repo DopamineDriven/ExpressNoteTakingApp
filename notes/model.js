@@ -15,10 +15,11 @@ const noteSchema = new Schema({
         required: true,
         default: new Date()
     },
+    //object id field acts like a foreign key for user records
     authorID: {
         type: Schema.Types.ObjectId,
-        ref: '',
-        required: false
+        ref: 'User',
+        required: true
     }
 });
 //mongoose will make the name of the collection Notes (pluralizes the model)

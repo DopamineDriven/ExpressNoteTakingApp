@@ -1,7 +1,9 @@
 const router = require("express").Router();
 const PublicModel = require('./model');
 const bcryptjs = require('bcryptjs');
-const chance = require("chance");
+const Chance = require("chance");
+//create instance of chance to generate access token
+const chance = new Chance()
 
 //user login
 router.post('/login',
@@ -206,7 +208,27 @@ function pwCheck (request, response, next) {
 
 //access token middleware using chance npm to generate guid (global unique id)
 function allowAccess (request, response, next) {
-    response.send(request.userDocument)
+    const accessToken = chance.guid()
+    //save accessToken to DB in user document
+    //can use .save() beccause userDocument object is instance of mongoose model
+    request.userDocument.accessToken = accessToken
+    request.userDocument
+        .save()
+        .then((result) => {
+            if(result) {
+                response.send(accessToken)
+            } else {
+                response
+                    .status(400)
+                    .send("error")
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            response
+                .status(500)
+                .send("error occurred")
+        })
 }
 
 

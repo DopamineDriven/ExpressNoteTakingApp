@@ -18,6 +18,7 @@ const publicSchema = new Schema({
         type: String,
         required: true
     },
+    //no required true boolean because access tokens are only issued when logged in
     accessToken: {
         type: String
     },

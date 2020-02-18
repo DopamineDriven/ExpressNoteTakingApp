@@ -8,7 +8,8 @@ const app = express();
 const PORT = 4000;
 
 //connecting express and mongodb via mongoose
-mongoose.connect('mongodb://localhost/expressnotetaker', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost/expressnotetaker', {useNewUrlParser: true, useUnifiedTopology: true});
+
 
 //parses any json body passed in the app
 app.use(bodyParser.json())
