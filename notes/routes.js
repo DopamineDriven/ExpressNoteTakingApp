@@ -82,7 +82,9 @@ router.post(
 //update note by id -- put -- findOneAndUpdate
 router.put("/:id", 
     passport.authenticate('bearer', { session: false }),
-    updateInputValidation, 
+    updateInputValidation,
+    findNote,
+    isAuthor,
     (request, response, next) => {
         //three parameters: (1) what to find (2) what to update (3) show old vs new records
         NoteModel.findOneAndUpdate({ _id: request.params.id }, request.updateObject, {
@@ -167,6 +169,37 @@ function updateInputValidation(request, response, next) {
     }
     request.updateObject=updateObject
     next()
+}
+
+function findNote(request, response, next) {
+    NoteModel.findById(request.params.id)
+        .then((noteDocument) => {
+            if(!noteDocument) {
+                response
+                    .status(404)
+                    .send("note not found")
+            } else {
+                request.noteDocument = noteDocument
+                next()
+            }
+        })
+        .catch((error) => {
+            console.log(error)
+            response
+                .status(500)
+                .send("Error Happened")
+        })
+}
+
+function isAuthor(request, response, next) {
+    //mongo method: .equal
+    if(request.user._id.equal(request.noteDocument.authorID)) {
+        next()
+    } else {
+        response
+            .status(401)
+            .send("not authorized to perform this action")
+    }
 }
 
 module.exports = router;
