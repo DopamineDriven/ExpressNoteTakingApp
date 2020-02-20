@@ -8,7 +8,11 @@ const app = express();
 const PORT = 4000;
 
 //connecting express and mongodb via mongoose
-mongoose.connect('mongodb://localhost/expressnotetaker', {useNewUrlParser: true, useUnifiedTopology: true});
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/expressnotetaker";
+
+mongoose.connect(MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true});
+
+console.log(MONGODB_URI)
 
 
 //parses any json body passed in the app
