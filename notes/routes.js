@@ -109,8 +109,10 @@ router.put("/:id",
 });
 
 //delete note by id--mongoose uses findOneAndRemove--uses provided id and removes it
-router.delete("/:id", 
+router.delete("/:id",
     passport.authenticate('bearer', { session: false }),
+    findNote,
+    isAuthor,
     (request, response, next) => {
         NoteModel.findOneAndRemove({ _id: request.params.id })
             .then((results) => {
@@ -193,7 +195,7 @@ function findNote(request, response, next) {
 
 function isAuthor(request, response, next) {
     //mongo method: .equal
-    if(request.user._id.equal(request.noteDocument.authorID)) {
+    if(request.user._id.equals(request.noteDocument.authorID)) {
         next()
     } else {
         response
